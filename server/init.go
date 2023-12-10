@@ -1,7 +1,9 @@
 package server
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -14,7 +16,18 @@ func StartHTTPServer() error {
 		w.Write([]byte("welcome"))
 	})
 
-	if err := http.ListenAndServe(":3000", r); err != nil {
+	r.Get("/api/s3/upload", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("upload"))
+	})
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	log.Println("Starting Relay server on :" + port)
+
+	if err := http.ListenAndServe(":"+port, r); err != nil {
 		return err
 	}
 
