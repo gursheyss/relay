@@ -13,8 +13,13 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	err = relay.Init()
+	startServer, err := relay.Init()
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
+	}
+
+	err = startServer()
+	if err != nil {
+		log.Fatal(err)
 	}
 }

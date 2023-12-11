@@ -9,15 +9,11 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func StartHTTPServer() error {
+func SetupServer() (func() error, error) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("welcome"))
-	})
-
-	r.Get("/api/s3/upload", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("upload"))
 	})
 
 	port := os.Getenv("PORT")
@@ -25,11 +21,10 @@ func StartHTTPServer() error {
 		port = "3000"
 	}
 
-	log.Println("Starting Relay server on :" + port)
-
-	if err := http.ListenAndServe(":"+port, r); err != nil {
-		return err
+	startServer := func() error {
+		log.Println("Starting Relay server on port " + port)
+		return http.ListenAndServe(":"+port, r)
 	}
 
-	return nil
+	return startServer, nil
 }
